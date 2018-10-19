@@ -1,0 +1,95 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "resource",
+    "overwrite": false,
+    "_partials": [
+        {
+            "template": "{{#notNull resource._entity}}/*\n * SCHEMA DB {{resource._entity.name}}\n * \n\t{\n\t\t{{#each resource._entity._attrs}}\n\t\t{{name}}: {\n\t\t\ttype: '{{type}}'{{#required}}, \n\t\t\trequired : true{{/required}}{{#unique}},\n\t\t\tunique : true, {{/unique}}{{#if _enum}},\n\t\t\tenum : {{#joinObj _enum 'name'}}{{/joinObj}}, {{/if}}\n\t\t},\n\t\t{{/each}}\n\t\t//RELATIONS\n\t\t{{#each resource._relations}}\n\t\t\t{{#equal _ent1.name ../name}}\n\t\t{{name}}: {{#equal type 'm:m'}}[{{/equal}}{\n\t\t\ttype: Schema.ObjectId{{#required}}, \n\t\t\trequired : true{{/required}},\n\t\t\tref : \"{{_ent2.name}}\"\n\t\t}{{#equal type 'm:m'}}]{{/equal}},\n\t\t\t{{/equal}}\n\t\t{{/each}}\n\t\t\n\t\t\n\t\t//EXTERNAL RELATIONS\n\t\t\n\t\t{{#each resource._relations}}\n\t\t\t{{#notEqual _ent1.name ../name}}\n\t\t{{name}}: {{#equal type 'm:m'}}[{{/equal}}{\n\t\t\ttype: Schema.ObjectId{{#required}}, \n\t\t\trequired : true{{/required}},\n\t\t\tref : \"{{_ent1.name}}\"\n\t\t}{{#equal type 'm:m'}}]{{/equal}},\n\t\t\t{{/notEqual}}\n\t\t{{/each}}\n\t\t\n\t}\n * \n * \n * \n * Custom APIs\n{{#notEmpty resource}} *{{#each resource._services}}{{#equal crudAction null}}\n * {{_resource.name}}Service.{{name}}{{#notEmpty description}}\n *\t@description {{description}}{{/notEmpty}}{{#each _params}}\n *\t@param {{type}} {{name}}{{#notEmpty description}} {{description}}{{/notEmpty}}{{/each}}{{#notEmpty returnType}}\n *\t@returns {{returnType}}{{/notEmpty}}\n *{{/equal}}{{/each}}\n */{{/notEmpty}}{{/notNull}}",
+            "tagTo": "// end documentation",
+            "tagFrom": "// start documentation",
+            "name": "Partial documentation"
+        }
+    ]
+}
+**** END PROPERTIES SKAFFOLDER ****
+
+const app = require('../../../app.js');
+const db_{{db.name}} = require('../../../db/{{db.name}}_schema.js');
+const logger = require('../../../logger.js');
+const handleError = require('../../../security/util.js').handleError;
+const properties = require('../../../properties.js');
+
+
+// start documentation
+// end documentation
+
+// INSERT HERE YOURS CUSTOM METHODS
+
+{{#equal resource.name 'User'}}
+
+
+/**
+ * UserService.edit
+ *   @description Save user
+ *   @returns object
+ *
+ */
+app.post(properties.api + '/Users/:id', function (req, res) {
+	let user = req.body;
+	delete user.password;
+
+	db_{{db.name}}.User.findByIdAndUpdate(req.params.id, user, {
+		'new': true
+	}, function (err, obj) {
+		if (err) return handleError(err, res);
+		res.send(obj);
+	});
+});
+
+/**
+ * UserService.changePassword
+ *   @description Change password of user from admin
+ *   @returns object
+ *
+ */
+app['post'](properties.api + '/Users/:id/changePassword', function (req, res) {
+
+	db_{{db.name}}.User.findOne({
+		username: req.user.username,
+		password: req.body.passwordAdmin
+	}).exec(function (err, user) {
+		if (err) return handleError(err, res);
+		if (!user) return handleError("Admin password not valid", res);
+
+		db_{{db.name}}.User.findByIdAndUpdate(req.params.id, {
+			password: req.body.passwordNew
+		}, {
+			'new': true
+		}, function (err, obj) {
+			if (err) return handleError(err, res);
+			res.send({
+				success: true
+			});
+		});
+
+	});
+});
+
+{{/equal}}
+
+{{#each resource._services}}
+		{{#equal crudAction null}}
+
+/**
+ * {{../resource.name}}Service.{{name}}{{#notEmpty description}}
+ *   @description {{description}}{{/notEmpty}}{{#each _params}}
+ *   @param {{type}} {{name}}{{#notEmpty description}} {{description}}{{/notEmpty}}{{/each}}{{#notEmpty returnType}}
+ *   @returns {{returnType}}{{/notEmpty}}
+ *
+ */
+app['{{lowercase method}}'](properties.api + '{{../resource.url}}{{#editUrlParam url}}{{/editUrlParam}}', function(req, res){
+	res.send([]);
+});
+			
+		{{/equal}}
+{{/each}}

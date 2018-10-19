@@ -1,0 +1,46 @@
+<!-- TITLE -->
+<div class="mb-40 mt-40">
+    <h1>FilmMaker</h1>
+</div>
+<div class="card mb-40">
+    <div class="card-body">
+        <h5 class="card-title border-bottom border-italia">
+            <i class="fa fa-search"></i> Dettaglio
+        </h5>
+        <form #editForm="ngForm" [ngClass]="{'was-validated': formValid!=null}">
+            <div class="row mt-40 justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" [(ngModel)]="item.name" name="name" #name="ngModel" required>
+                        <label [className]="item.name && item.name.length > 0 ? 'active' : ''" for="name">Name *</label>
+                        <div class="invalid-feedback">Valore obbligatorio</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="surname" [(ngModel)]="item.surname" name="surname" #surname="ngModel" >
+                        <label [className]="item.surname && item.surname.length > 0 ? 'active' : ''" for="surname">Surname</label>
+                    </div>
+                    <!-- RELATIONS -->
+                    
+
+
+                    <h2 class="mb-20 mt-40" *ngIf="externalFilm[0]">Relazioni esterne</h2>
+        
+                        <h3 *ngIf="externalFilm[0]">Film</h3>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let item of externalFilm">
+                                <a [routerLink]="['/films', item._id]">
+                                    {{item._id}}
+                                </a>
+                            </li>
+                        </ul>
+
+                    <!-- BUTTON BAR -->
+                    <div class="mt-40">
+                        <button class="btn btn-primary pull-right" (click)="save(editForm.valid, item)">Salva</button>
+                        <button class="btn btn-secondary pull-right mr-2" (click)="goBack()">Torna alla lista</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

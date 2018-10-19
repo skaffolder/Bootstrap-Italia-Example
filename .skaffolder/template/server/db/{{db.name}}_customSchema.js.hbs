@@ -1,0 +1,10 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "db",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+// INSERT HERE YOURS SCHEMA'S CUSTOMIZATIONS
+
+const db_{{db.name}} = require('./{{db.name}}_schema.js');
+const db_{{db.name}}_schema = db_{{db.name}}.schema;

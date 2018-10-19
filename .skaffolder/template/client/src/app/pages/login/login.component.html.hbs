@@ -1,0 +1,54 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "oneTime",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+<div class="row justify-content-md-center mt-40">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <h2>Benvenuto in</h2>
+                    <h2 class="mb-40">{{unslug project.name}}</h2>
+                </div>
+                <form #loginForm="ngForm">
+                    <div class="alert alert-danger" role="alert" *ngIf="showError">
+                        Username o Password non validi
+                    </div>
+                    <div class="form-group" [ngClass]="{'was-validated': (loginForm.submitted && username.invalid) || (username.dirty && username.invalid)}">
+                        <i class="ico-prefix it-mail"></i>
+                        <label for="username" [className]="username ? 'active' : ''">Username</label>
+                        <input type="text" class="form-control" id="username" [(ngModel)]="user.username" name="username"
+                            #username="ngModel" required>
+                        <div *ngIf="(loginForm.submitted && username.invalid) || (username.dirty && username.invalid)"
+                            class="alert alert-danger">
+                            Username obbligatorio
+                        </div>
+                    </div>
+
+                    <div class="form-group" [ngClass]="{'was-validated': (loginForm.submitted && password.invalid) || (password.dirty && password.invalid)}">
+                        <i class="ico-prefix it-lock"></i>
+                        <label for="password" [className]="password ? 'active' : ''">Password</label>
+                        <input type="password" class="form-control" id="password" [(ngModel)]="user.password" name="password"
+                            #password="ngModel" required>
+                        <div *ngIf="(loginForm.submitted && password.invalid) || (password.dirty && password.invalid)"
+                            class="alert alert-danger">
+                            Password obbligatoria
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-check">
+                            <input id="checkbox1" type="checkbox" [(ngModel)]="remember" name="remember">
+                            <label for="checkbox1">Ricorda login</label>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <button type="submit" class="btn btn-primary pull-right" (click)="login(loginForm)">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

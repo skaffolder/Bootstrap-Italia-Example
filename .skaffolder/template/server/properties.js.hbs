@@ -1,0 +1,15 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "oneTime",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+module.exports = {
+	{{#each dbs}}
+	{{name}}_dbUrl: 'localhost:27017/{{name}}',
+	{{/each}}
+    publicPath: '../client/dist',
+	port: 3000,
+    tokenSecret: 'Insert Your Secret Token',
+    api: '/api'
+}

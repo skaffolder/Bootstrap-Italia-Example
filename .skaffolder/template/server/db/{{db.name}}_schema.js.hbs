@@ -1,0 +1,86 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "db",
+    "overwrite": true,
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+/**
+
+  _____                      _              _ _ _     _   _     _        __ _ _      
+ |  __ \                    | |            | (_) |   | | | |   (_)      / _(_) |     
+ | |  | | ___    _ __   ___ | |_    ___  __| |_| |_  | |_| |__  _ ___  | |_ _| | ___ 
+ | |  | |/ _ \  | '_ \ / _ \| __|  / _ \/ _` | | __| | __| '_ \| / __| |  _| | |/ _ \
+ | |__| | (_) | | | | | (_) | |_  |  __/ (_| | | |_  | |_| | | | \__ \ | | | | |  __/
+ |_____/ \___/  |_| |_|\___/ \__|  \___|\__,_|_|\__|  \__|_| |_|_|___/ |_| |_|_|\___|
+                                                                                     
+                                                                                   
+ *  DO NOT EDIT HIS FILE!!
+ * 
+ *  FOR CUSTOMIZE DB SCHEMA PLEASE EDIT db/{{db.name}}_customSchema.js
+ * 
+ *  -- THIS FILE WILL BE OVERWRITTEN ON THE NEXT SKAFFOLDER'S CODE GENERATION --
+ * 
+ */
+
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const createUser = require('../security/security.js');
+
+const db_{{db.name}}_schema = [];
+const db_{{db.name}} = [];
+
+/**
+ * SCHEMA DB {{db.name}}
+ */
+
+{{#each db._resources}}{{#notNull _entity}}
+
+ /**
+  * {{_entity.name}}
+  */
+db_{{../db.name}}_schema.{{_entity.name}} = new mongoose.Schema({
+	{{#_entity._attrs}}
+	{{name}}: {{#equal ../_entity.name 'User'}}{{#equal name 'roles'}}[{{/equal}}{{/equal}}{
+		type: '{{toJSType type}}'{{#required}}, 
+		required : true{{/required}}{{#unique}},
+		unique : true, {{/unique}}{{#if _enum}},
+		enum : {{#joinObj _enum 'name'}}{{/joinObj}}, {{/if}}
+	}{{#equal ../_entity.name 'User'}}{{#equal name 'roles'}}]{{/equal}}{{/equal}},
+	{{/_entity._attrs}}
+	//RELATIONS
+	{{#_relations}}
+		{{#equal _ent1.name ../name}}
+	{{name}}: {{#equal type 'm:m'}}[{{/equal}}{
+		type: Schema.ObjectId{{#required}}, 
+		required : true{{/required}},
+		ref : "{{_ent2.name}}"
+	}{{#equal type 'm:m'}}]{{/equal}},
+		{{/equal}}
+	{{/_relations}}
+	
+	
+	//EXTERNAL RELATIONS
+	/*
+	{{#_relations}}{{#notEqual _ent1.name ../name}}{{name}}: {{#equal type 'm:m'}}[{{/equal}}{
+		type: Schema.ObjectId{{#required}}, 
+		required : true{{/required}},
+		ref : "{{_ent1.name}}"
+	}{{#equal type 'm:m'}}]{{/equal}},
+	{{/notEqual}}{{/_relations}}*/
+});
+{{/notNull}}{{/each}}
+
+
+// Import schema customization
+require('./{{db.name}}_customSchema.js');
+var {{db.name}}_model = require('./{{db.name}}_crud.js');
+
+// Declare mongoose model
+{{#each db._resources}}{{#notNull _entity}}
+db_{{../db.name}}.{{_entity.name}} = {{../db.name}}_model.connection.model('{{_entity.name}}', db_{{../db.name}}_schema.{{_entity.name}} );{{/notNull}}{{/each}}
+
+module.exports = db_{{db.name}};
+
+// Create ADMIN user if does not exist
+createUser.createUser();

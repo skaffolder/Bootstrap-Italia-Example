@@ -1,0 +1,32 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "oneTime",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8">
+  <title>Skaffolder - {{unslug project.name}}</title>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+  <div class="cookiebar bg-dark p-4 hide" aria-hidden="true">
+    <p class="text-white">Questo sito utilizza cookie tecnici, analytics e di terze parti.
+      <br>Proseguendo nella navigazione accetti l’utilizzo dei cookie.<br>
+    </p>
+    <p>
+      <button data-accept="cookiebar" class="btn btn-info mr-2">Accetto</button>
+      <a href="" class="btn btn-outline-info">Privacy policy</a>
+    </p>
+  </div>
+  <app-{{unslug project.name}}></app-{{unslug project.name}}>
+</body>
+
+</html>

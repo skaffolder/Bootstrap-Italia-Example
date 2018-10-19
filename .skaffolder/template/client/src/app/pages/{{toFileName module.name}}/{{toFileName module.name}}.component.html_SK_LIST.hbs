@@ -1,0 +1,117 @@
+<!-- TITLE -->
+<div class="mb-40 mt-40">
+    <h1>Lista {{capitalize crudResource.name}}</h1>
+</div>
+
+<!-- SEARCH FORM -->
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title border-bottom border-italia">
+            <i class="fa fa-search"></i> Cerca
+        </h5>
+        
+        <form #searchForm="ngForm">
+            <div class="row mt-40 justify-content-md-center">
+                <div class="col-md-10">
+                    {{#each crudResource._entity._attrs}}
+                    {{#notEmpty _enum}}
+                    <div class="form-group">
+                        <select name="{{name}}" id="{{name}}" [(ngModel)]="search.{{name}}" class="form-control" #{{name}}="ngModel">
+                            <option value="" selected>Seleziona una opzione</option>
+                            {{#each _enum}}
+                            <option value="{{name}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                        <label for="{{name}}">{{firstUpperCase name}}</label>
+                    </div>
+                    {{/notEmpty}}
+                    {{#isEmptyNull _enum}}
+                    {{#equal type 'Boolean'}}
+                    <div class="form-check">
+                        <input type="checkbox" [(ngModel)]="search.{{name}}" name="{{name}}" id="{{name}}">
+                        <label for="{{name}}">{{firstUpperCase name}}</label>
+                    </div>
+                    {{/equal}}
+                    {{#notEqual type 'Boolean'}}
+                    <div class="form-group">
+                        <label for="{{name}}"{{#equal type 'Date'}} class="active"{{/equal}}>{{firstUpperCase name}}</label>
+                        <input type="{{#equal type 'Date'}}date{{/equal}}{{#equal type 'Number'}}number{{/equal}}{{#equal type 'Integer'}}number{{/equal}}{{#notEqual type 'Boolean'}}{{#notEqual type 'Integer'}}{{#notEqual type 'Date'}}{{#notEqual type 'Number'}}text{{/notEqual}}{{/notEqual}}{{/notEqual}}{{/notEqual}}" class="form-control" id="{{name}}" [(ngModel)]="search.{{name}}" name="{{name}}" #{{name}}="ngModel">
+                    </div>
+                    {{/notEqual}}
+                    {{/isEmptyNull}}
+                    {{/each}}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TABLE -->
+<table class="table mt-40">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            {{#each crudResource._entity._attrs}}
+            <th scope="col">{{name}}</th>
+            {{/each}}
+            <th>Rimuovi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of list | search: { {{#each crudResource._entity._attrs}}'{{name}}': search.{{name}}{{#isNotLast ../crudResource._entity._attrs @index}}, {{/isNotLast}}{{/each}} }">
+            <!-- ATTRIBUTES -->
+            <td>
+                <a [routerLink]="['/{{lowercase crudResource.name}}s', item._id]">\{{item._id}}</a>
+            </td>
+            {{#each crudResource._entity._attrs}}
+            {{#notEqual type 'Date'}}
+            <td>\{{item.{{name}} }}</td>
+            {{/notEqual}}
+            {{#equal type 'Date'}}
+            <td>\{{item.{{name}} | date }}</td>
+            {{/equal}}
+            {{/each}}
+
+            <!-- DELETE BUTTON -->
+            <td>
+                <button class="btn btn-outline-primary btn-xs" data-toggle="modal" data-target="#deleteModal" (click)="selectId(item._id)">
+                    Rimuovi
+                </button>
+            </td>
+        </tr>
+    </tbody>
+    <div class="no-result" *ngIf="(list | search: {  {{#each crudResource._entity._attrs}} '{{name}}': search.{{name}} {{#isNotLast ../crudResource._entity._attrs @index}}, {{/isNotLast}}{{/each}} }).length == 0">
+        Nessun elemento trovato
+    </div>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <i class="fa fa-times-circle"></i>&nbsp;&nbsp;Rimuovi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Vuoi rimuovere questo elemento?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">NO</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteItem()">SI</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BUTTON -->
+<button class="btn btn-primary text-center pull-right mb-20" routerLink="{{linkUrl}}new">
+    <span>
+        <i class="fa fa-plus"></i>
+    </span>
+</button>
+
+<div class="clearfix"></div>

@@ -1,0 +1,128 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "db",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+<!-- TITLE -->
+<div class="mb-40 mt-40">
+    <h1>Utente</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-title border-bottom border-italia">
+            <i class="fa fa-search"></i> Profilo
+        </div>
+        <form #editForm="ngForm" *ngIf="user">
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <label class="active" for="username">Username</label>
+                        <input type="text" class="form-control" id="username" [(ngModel)]="user.username" name="username" #username="ngModel" required [disabled]="user._id">
+                    </div>
+                    {{#each db._resources}}
+                    {{#equal name 'User'}}
+                    {{#each _entity._attrs}}
+                    {{#notEqual name 'username'}}
+                    {{#notEqual name 'password'}}
+                    {{#notEqual name 'roles'}}
+                    <div class="form-group">
+                        <label for="{{lowercase name}}">{{capitalize name}}</label>
+                        <input type="text" class="form-control" id="{{lowercase name}}" [(ngModel)]="user.{{lowercase name}}" name="{{lowercase name}}" #{{lowercase name}}="ngModel" {{#equal required true}}reqired{{/equal}}>
+                    </div>
+                    {{/notEqual}}
+                    {{/notEqual}}
+                    {{/notEqual}}
+                    {{/each}}
+                    {{/equal}}
+                    {{/each}}
+                    <div class="form-group" *ngIf="!user._id">
+                        <label for="name">Password</label>
+                        <input type="password" class="form-control" id="password" [(ngModel)]="user.password" name="password" #password="ngModel" required>
+                    </div>
+                    <div class="form-group" *ngIf="!user._id">
+                        <label for="name">Conferma Password</label>
+                        <input type="password" class="form-control" id="passwordConfirm" [(ngModel)]="user.passwordConfirm" name="passwordConfirm" #passwordConfirm="ngModel" required>
+                    </div>
+                    <!-- ROLE MANAGEMENT -->
+                    <h3>Ruoli</h3>
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label for="newRole">Nuovo ruolo...</label>
+                            <input type="text" class="form-control" id="newRole" name="newRole" #newRole>
+                        </div>
+                        <div class="col-12">
+                            <span class="btn btn-primary text-center pull-right mb-20" (click)="addRole(newRole)">
+                                <i class="fa fa-plus"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- NO ROLES -->
+                    <label *ngIf="!user.roles || user.roles.length==0">
+                        Nessun ruolo assegnato all'utente
+                    </label>
+                    <!-- NO ROLES -->
+                    <div *ngFor="let role of user.roles; let i = index; trackBy:trackByFn" class="row mt-2">
+                        <div class="form-group" class="col-8">
+                            <input type="text" class="form-control" id="role\{{i}}" [(ngModel)]="user.roles[i]" name="roles\{{i}}">
+                        </div>
+                        <span class="btn btn-outline-primary btn-xs col-3" (click)="removeRole(i)">
+                            Rimuovi
+                        </span>
+                    </div>
+                    <div class="mt-40">
+                        <button class="btn btn-outline-primary" *ngIf="user._id" data-toggle="modal" data-target="#changePasswordModal">Cambia Password</button>
+                        <button class="btn btn-primary pull-right" color="primary" [disabled]="editForm.invalid" (click)="save()">Salva</button>
+                        <button class="btn btn-secondary pull-right mr-2" routerLink="/manage-users">Torna alla lista utenti</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-lock"></i>&nbsp;&nbsp;Cambia password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+            <form #changePasswordForm="ngForm" class="container-fluid">
+                <div class="modal-body">
+                    <div class="row justify-content-md-center">
+                        <div class="col-10">
+                            <div class="form-group">
+                                <label for="passwordAdmin">Password Admin</label>
+                                <input type="password" class="form-control" id="passwordAdmin" [(ngModel)]="passwordAdmin" name="passwordAdmin" #passwordAdminForm="ngModel" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="passwordNew">Nuova Password</label>
+                                <input type="password" class="form-control" id="passwordNew" [(ngModel)]="passwordNew" name="passwordNew" #passwordNewForm="ngModel" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="passwordNewConfirm">Conferma Nuova Password</label>
+                                <input type="password" class="form-control" id="passwordNewConfirm" [(ngModel)]="passwordNewConfirm" name="passwordNewConfirm" #passwordNewConfirmForm="ngModel" [ngClass]="{'is-invalid': passwordNew && passwordNewConfirm && passwordNew !== passwordNewConfirm}"
+                                    required>
+                                <p *ngIf="passwordNew && passwordNewConfirm && passwordNew !== passwordNewConfirm" class="help-block">Le passwords non coincidono</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div *ngIf="showError" class="row justify-content-md-center">
+                <div class="alert alert-danger text-left">
+                    <strong>Error!</strong> Password di Admin non valida
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" #closeModal class="btn btn-default" data-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" [disabled]="changePasswordForm.invalid || (passwordAdmin && passwordNewConfirm && passwordNew !== passwordNewConfirm)" (click)="changePassword()">Salva</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ManageUserListRoutingModule } from './manage-user-list-routing.module';
+import { SharedModule } from '../../../shared/shared.module';
+import { ManageUserListComponent } from './manage-user-list.component';
+
+
+@NgModule({
+  imports: [
+    CommonModule,
+    ManageUserListRoutingModule,
+    FormsModule,
+    SharedModule
+  ],
+  declarations: [
+    ManageUserListComponent
+  ]
+})
+export class ManageUserListModule { }

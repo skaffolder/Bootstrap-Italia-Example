@@ -1,0 +1,26 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "oneTime",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ManageUserEditRoutingModule } from './manage-user-edit-routing.module';
+import { SharedModule } from '../../../shared/shared.module';
+import { ManageUserEditComponent } from './manage-user-edit.component';
+
+
+@NgModule({
+  imports: [
+    CommonModule,
+    ManageUserEditRoutingModule,
+    FormsModule,
+    SharedModule
+  ],
+  declarations: [
+    ManageUserEditComponent
+  ]
+})
+export class ManageUserEditModule { }

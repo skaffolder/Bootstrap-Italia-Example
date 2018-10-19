@@ -1,0 +1,23 @@
+**** PROPERTIES SKAFFOLDER ****
+{
+    "forEachObj": "oneTime",
+    "_partials": []
+}
+**** END PROPERTIES SKAFFOLDER ****
+import { BehaviorSubject, Observable } from 'rxjs';
+import { User } from 'src/app/domain/{{toFileName dbs.0.name}}/user';
+import * as _ from 'lodash';
+
+/**
+ * Store the current user
+ */
+class CurrentUser {
+    private currentUserSubject = new BehaviorSubject(null);
+    public currentUser$: Observable<User> = this.currentUserSubject.asObservable();
+
+    setUser(user: User) {
+        this.currentUserSubject.next(_.cloneDeep(user));
+    }
+}
+
+export const store = new CurrentUser();
